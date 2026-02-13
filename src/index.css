@@ -1,0 +1,178 @@
+@import "@fontsource/nunito/400.css";
+@import "@fontsource/nunito/500.css";
+@import "@fontsource/nunito/600.css";
+@import "@fontsource/nunito/700.css";
+@import "@fontsource/nunito/800.css";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Cream/Off-white background */
+    --background: 40 33% 96%;
+    --foreground: 25 30% 20%;
+
+    /* Cards - matching reference pastels */
+    --card: 40 33% 96%;
+    --card-foreground: 25 30% 20%;
+
+    /* Soft Blue Card */
+    --card-blue: 200 60% 85%;
+    --card-blue-foreground: 200 50% 30%;
+
+    /* Soft Yellow Card */
+    --card-yellow: 45 70% 88%;
+    --card-yellow-foreground: 35 50% 25%;
+
+    /* Soft Mint Card */
+    --card-mint: 165 40% 85%;
+    --card-mint-foreground: 165 40% 30%;
+
+    /* Soft Beige Card */
+    --card-beige: 35 35% 90%;
+    --card-beige-foreground: 30 30% 25%;
+
+    /* Cool tones for reviews - now warm brown tones */
+    /* Warm Tan */
+    --card-lavender: 30 30% 82%;
+    --card-lavender-foreground: 25 35% 25%;
+
+    /* Soft Cocoa */
+    --card-rose: 20 25% 78%;
+    --card-rose-foreground: 20 30% 25%;
+
+    /* Muted Terracotta */
+    --card-sage: 15 28% 80%;
+    --card-sage-foreground: 15 30% 25%;
+
+    /* Dusty Mocha */
+    --card-purple: 25 22% 76%;
+    --card-purple-foreground: 25 28% 22%;
+
+    /* Dark Card (charcoal) */
+    --card-dark: 220 15% 20%;
+    --card-dark-foreground: 40 30% 95%;
+
+    --popover: 40 33% 96%;
+    --popover-foreground: 25 30% 20%;
+
+    /* Primary - warm brown */
+    --primary: 25 35% 25%;
+    --primary-foreground: 40 30% 95%;
+
+    /* Secondary - soft beige */
+    --secondary: 35 35% 90%;
+    --secondary-foreground: 25 30% 20%;
+
+    --muted: 35 20% 92%;
+    --muted-foreground: 25 15% 45%;
+
+    /* Accent - soft yellow for CTAs */
+    --accent: 45 70% 88%;
+    --accent-foreground: 35 50% 20%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 35 20% 88%;
+    --input: 35 20% 88%;
+    --ring: 25 35% 25%;
+
+    --radius: 1.5rem;
+
+    /* Paw icon colors */
+    --paw-blue: 200 60% 55%;
+    --paw-brown: 25 40% 35%;
+    --paw-yellow: 45 70% 55%;
+    --paw-mint: 165 40% 50%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    font-family: 'Nunito', sans-serif;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: 'Nunito', sans-serif;
+    @apply font-bold tracking-tight leading-tight;
+  }
+
+  p {
+    @apply leading-relaxed;
+  }
+}
+
+@layer components {
+  .card-blue {
+    @apply bg-[hsl(var(--card-blue))] text-[hsl(var(--card-blue-foreground))];
+  }
+
+  .card-yellow {
+    @apply bg-[hsl(var(--card-yellow))] text-[hsl(var(--card-yellow-foreground))];
+  }
+
+  .card-mint {
+    @apply bg-[hsl(var(--card-mint))] text-[hsl(var(--card-mint-foreground))];
+  }
+
+  .card-beige {
+    @apply bg-[hsl(var(--card-beige))] text-[hsl(var(--card-beige-foreground))];
+  }
+
+  .card-lavender {
+    @apply bg-[hsl(var(--card-lavender))] text-[hsl(var(--card-lavender-foreground))];
+  }
+
+  .card-rose {
+    @apply bg-[hsl(var(--card-rose))] text-[hsl(var(--card-rose-foreground))];
+  }
+
+  .card-sage {
+    @apply bg-[hsl(var(--card-sage))] text-[hsl(var(--card-sage-foreground))];
+  }
+
+  .card-purple {
+    @apply bg-[hsl(var(--card-purple))] text-[hsl(var(--card-purple-foreground))];
+  }
+
+  .card-dark {
+    @apply bg-[hsl(var(--card-dark))] text-[hsl(var(--card-dark-foreground))];
+  }
+
+  .paw-icon-blue {
+    @apply text-[hsl(var(--paw-blue))];
+  }
+
+  .paw-icon-brown {
+    @apply text-[hsl(var(--paw-brown))];
+  }
+
+  .paw-icon-yellow {
+    @apply text-[hsl(var(--paw-yellow))];
+  }
+
+  .rounded-card {
+    @apply rounded-3xl p-5 md:p-8;
+  }
+
+  .rounded-card-lg {
+    @apply rounded-[2rem] p-6 md:p-12;
+  }
+}
