@@ -3,9 +3,9 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import PawIcon from "@/components/PawIcon";
+import { PawIcon } from "@/components/PawIcon";
 import { motion } from "framer-motion";
-import { LogOut, Sparkles, ClipboardList, Calendar, ChevronRight, ImagePlus, Loader2, Activity, Heart, TrendingUp, AlertCircle } from "lucide-react";
+import { LogOut, Sparkles, ClipboardList, ChevronRight, ImagePlus, Loader2, Activity, TrendingUp, AlertCircle, Lock, Calendar } from "lucide-react";
 import Tesseract from "tesseract.js";
 import { supabase } from "@/lib/supabase";
 import { toast } from "@/hooks/use-toast";
@@ -365,7 +365,6 @@ const Dashboard = () => {
   const [vetNotes, setVetNotes] = useState("");
   const [visitSummary, setVisitSummary] = useState<VisitSummary | null>(null);
   const [isTranscribing, setIsTranscribing] = useState(false);
-  const [isLimitModalOpen, setIsLimitModalOpen] = useState(false);
 
   // Sync recovery stats with Supabase
   const syncStatsWithSupabase = async (stats: RecoveryStats) => {
@@ -552,11 +551,18 @@ const Dashboard = () => {
     const notesRemaining = user?.notesRemaining ?? 0;
     const isPro = user?.isPro ?? false;
 
-    console.log("Checking limit:", { notesRemaining, isPro });
-
     if (!isPro && notesRemaining <= 0) {
-      console.log("Limit reached, opening modal");
-      setIsLimitModalOpen(true);
+      toast({
+        title: "Upgrade to Pro Plan",
+        description: "You've used all your free notes. Redirecting to pricing...",
+      });
+      navigate("/");
+      setTimeout(() => {
+        const element = document.getElementById("pricing");
+        if (element) {
+          element.scrollIntoView({ behavior: "smooth" });
+        }
+      }, 500);
       return;
     }
 
@@ -630,8 +636,18 @@ const Dashboard = () => {
 
     // Check usage limit for free users before transcribing
     if (!user?.isPro && (user?.notesRemaining ?? 0) <= 0) {
-      setIsLimitModalOpen(true);
+      toast({
+        title: "Upgrade to Pro Plan",
+        description: "You've used all your free notes. Redirecting to pricing...",
+      });
       event.target.value = '';
+      navigate("/");
+      setTimeout(() => {
+        const element = document.getElementById("pricing");
+        if (element) {
+          element.scrollIntoView({ behavior: "smooth" });
+        }
+      }, 500);
       return;
     }
 
@@ -805,37 +821,6 @@ const Dashboard = () => {
                 </ul>
               </div>
             )}
-
-            <Dialog open={isLimitModalOpen} onOpenChange={setIsLimitModalOpen}>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Limit Reached</DialogTitle>
-                  <DialogDescription>
-                    You've reached the free limit of 5 vet notes. Upgrade to PawNote Pro for unlimited access to organise and track your pet's health!
-                  </DialogDescription>
-                </DialogHeader>
-                <DialogFooter>
-                  <Button variant="outline" onClick={() => setIsLimitModalOpen(false)}>
-                    Cancel
-                  </Button>
-                  <Button
-                    className="bg-primary text-primary-foreground hover:bg-primary/90"
-                    onClick={() => {
-                      setIsLimitModalOpen(false);
-                      navigate("/");
-                      setTimeout(() => {
-                        const element = document.getElementById("pricing");
-                        if (element) {
-                          element.scrollIntoView({ behavior: "smooth" });
-                        }
-                      }, 500);
-                    }}
-                  >
-                    Upgrade Now
-                  </Button>
-                </DialogFooter>
-              </DialogContent>
-            </Dialog>
           </div>
         )}
 
@@ -927,83 +912,146 @@ const Dashboard = () => {
                   </p>
 
                   {/* Behavior Intelligence Assistant */}
-                  <div className="card-blue rounded-card-lg mb-6">
+                  <div className="card-blue rounded-card-lg mb-6 relative">
                     <div className="flex items-center gap-3 mb-6">
                       <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
                         <Activity className="w-6 h-6 text-primary" />
                       </div>
-                      <div>
-                        <h3 className="text-lg font-bold">Wellness Intelligence</h3>
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2">
+                          <h3 className="text-lg font-bold">Wellness Intelligence</h3>
+                          {!user?.isPro && (
+                            <span className="bg-primary text-primary-foreground text-[10px] px-2 py-0.5 rounded-full font-semibold flex items-center gap-1">
+                              <Lock className="w-3 h-3" />
+                              PRO
+                            </span>
+                          )}
+                        </div>
                         <p className="text-xs text-muted-foreground">Trend monitoring assistant</p>
                       </div>
                     </div>
 
-                    {/* Daily Check-in Form */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-                      {['appetite', 'energy', 'sleep', 'movement', 'itching'].map((cat) => (
-                        <div key={cat} className="space-y-2">
-                          <label className="text-sm font-semibold capitalize flex items-center gap-2">
-                            {cat}
-                          </label>
-                          <div className="flex gap-2">
-                            {['worse', 'same', 'better'].map((val) => {
-                              const todayValue = (visitSummary.recoveryStats.dailyBehavior?.[getTodayDate()]?.[cat as keyof BehaviorLog]) || 'same';
-                              return (
-                                <button
-                                  key={val}
-                                  onClick={() => handleLogBehavior(cat as keyof BehaviorLog, val as any)}
-                                  className={`flex-1 py-3 md:py-2 text-xs rounded-lg border transition-all text-center flex items-center justify-center ${todayValue === val
-                                    ? "bg-primary text-primary-foreground border-primary"
-                                    : "bg-white/50 border-border hover:bg-white"
-                                    }`}
-                                >
-                                  {val}
-                                </button>
-                              );
-                            })}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-
-                    {/* Trends Display */}
-                    {Object.keys(visitSummary.recoveryStats.dailyBehavior || {}).length > 0 && (
-                      <div className="bg-white/60 rounded-2xl p-6 border border-primary/10">
-                        <div className="flex items-center gap-2 mb-4 text-primary font-bold">
-                          <TrendingUp className="w-5 h-5 shrink-0" />
-                          <span className="text-sm sm:text-base">Behavioral Insights (Day {Object.keys(visitSummary.recoveryStats.dailyBehavior || {}).length})</span>
-                        </div>
-
-                        <div className="space-y-4 mb-6">
-                          {calculateBehaviorIntelligence(visitSummary.recoveryStats.dailyBehavior || {})?.trends.map((t) => (
-                            <div key={t.category} className="flex items-center justify-between">
-                              <span className="text-sm capitalize font-medium">{t.category}</span>
-                              <div className="flex items-center gap-3">
-                                <span className={`text-[10px] sm:text-xs px-2 py-0.5 rounded-full whitespace-nowrap ${t.status === 'improving' ? 'bg-green-100 text-green-700' :
-                                  t.status === 'declining' ? 'bg-red-100 text-red-700' : 'bg-gray-100 text-gray-600'
-                                  }`}>
-                                  {t.status}
-                                </span>
-                                <span className="text-xs font-bold text-muted-foreground w-10 text-right">
-                                  {t.change >= 0 ? `+${t.change}%` : `${t.change}%`}
-                                </span>
+                    {user?.isPro ? (
+                      <>
+                        {/* Daily Check-in Form */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+                          {['appetite', 'energy', 'sleep', 'movement', 'itching'].map((cat) => (
+                            <div key={cat} className="space-y-2">
+                              <label className="text-sm font-semibold capitalize flex items-center gap-2">
+                                {cat}
+                              </label>
+                              <div className="flex gap-2">
+                                {['worse', 'same', 'better'].map((val) => {
+                                  const todayValue = (visitSummary.recoveryStats.dailyBehavior?.[getTodayDate()]?.[cat as keyof BehaviorLog]) || 'same';
+                                  return (
+                                    <button
+                                      key={val}
+                                      onClick={() => handleLogBehavior(cat as keyof BehaviorLog, val as any)}
+                                      className={`flex-1 py-3 md:py-2 text-xs rounded-lg border transition-all text-center flex items-center justify-center ${todayValue === val
+                                        ? "bg-primary text-primary-foreground border-primary"
+                                        : "bg-white/50 border-border hover:bg-white"
+                                        }`}
+                                    >
+                                      {val}
+                                    </button>
+                                  );
+                                })}
                               </div>
                             </div>
                           ))}
                         </div>
 
-                        <div className="p-4 bg-primary/5 rounded-xl flex gap-3">
-                          <AlertCircle className="w-5 h-5 text-primary shrink-0" />
-                          <p className="text-sm text-foreground/80 italic">
-                            "{calculateBehaviorIntelligence(visitSummary.recoveryStats.dailyBehavior || {})?.guidance}"
-                          </p>
-                        </div>
+                        {/* Trends Display */}
+                        {Object.keys(visitSummary.recoveryStats.dailyBehavior || {}).length > 0 && (
+                          <div className="bg-white/60 rounded-2xl p-6 border border-primary/10">
+                            <div className="flex items-center gap-2 mb-4 text-primary font-bold">
+                              <TrendingUp className="w-5 h-5 shrink-0" />
+                              <span className="text-sm sm:text-base">Behavioral Insights (Day {Object.keys(visitSummary.recoveryStats.dailyBehavior || {}).length})</span>
+                            </div>
 
-                        {Object.keys(visitSummary.recoveryStats.dailyBehavior || {}).length <= 4 && (
-                          <p className="mt-4 text-[10px] text-muted-foreground text-center">
-                            Building baseline (Day {Object.keys(visitSummary.recoveryStats.dailyBehavior || {}).length}/4)
-                          </p>
+                            <div className="space-y-4 mb-6">
+                              {calculateBehaviorIntelligence(visitSummary.recoveryStats.dailyBehavior || {})?.trends.map((t) => (
+                                <div key={t.category} className="flex items-center justify-between">
+                                  <span className="text-sm capitalize font-medium">{t.category}</span>
+                                  <div className="flex items-center gap-3">
+                                    <span className={`text-[10px] sm:text-xs px-2 py-0.5 rounded-full whitespace-nowrap ${t.status === 'improving' ? 'bg-green-100 text-green-700' :
+                                      t.status === 'declining' ? 'bg-red-100 text-red-700' : 'bg-gray-100 text-gray-600'
+                                      }`}>
+                                      {t.status}
+                                    </span>
+                                    <span className="text-xs font-bold text-muted-foreground w-10 text-right">
+                                      {t.change >= 0 ? `+${t.change}%` : `${t.change}%`}
+                                    </span>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+
+                            <div className="p-4 bg-primary/5 rounded-xl flex gap-3">
+                              <AlertCircle className="w-5 h-5 text-primary shrink-0" />
+                              <p className="text-sm text-foreground/80 italic">
+                                "{calculateBehaviorIntelligence(visitSummary.recoveryStats.dailyBehavior || {})?.guidance}"
+                              </p>
+                            </div>
+
+                            {Object.keys(visitSummary.recoveryStats.dailyBehavior || {}).length <= 4 && (
+                              <p className="mt-4 text-[10px] text-muted-foreground text-center">
+                                Building baseline (Day {Object.keys(visitSummary.recoveryStats.dailyBehavior || {}).length}/4)
+                              </p>
+                            )}
+                          </div>
                         )}
+                      </>
+                    ) : (
+                      <div className="relative">
+                        <div className="filter blur-sm pointer-events-none select-none">
+                          {/* Blurred preview */}
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+                            {['appetite', 'energy', 'sleep', 'movement', 'itching'].map((cat) => (
+                              <div key={cat} className="space-y-2">
+                                <label className="text-sm font-semibold capitalize flex items-center gap-2">
+                                  {cat}
+                                </label>
+                                <div className="flex gap-2">
+                                  {['worse', 'same', 'better'].map((val) => (
+                                    <button
+                                      key={val}
+                                      disabled
+                                      className="flex-1 py-3 md:py-2 text-xs rounded-lg border bg-white/50 border-border"
+                                    >
+                                      {val}
+                                    </button>
+                                  ))}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <div className="bg-white/95 rounded-2xl p-6 shadow-lg border border-primary/20 text-center max-w-sm">
+                            <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-primary/10 flex items-center justify-center">
+                              <Lock className="w-6 h-6 text-primary" />
+                            </div>
+                            <h4 className="text-lg font-bold mb-2">Pro Feature</h4>
+                            <p className="text-sm text-muted-foreground mb-4">
+                              Track daily wellness trends and get AI-powered behavioral insights with PawNote Pro.
+                            </p>
+                            <Button
+                              className="bg-primary text-primary-foreground hover:bg-primary/90"
+                              onClick={() => {
+                                navigate("/");
+                                setTimeout(() => {
+                                  const element = document.getElementById("pricing");
+                                  if (element) {
+                                    element.scrollIntoView({ behavior: "smooth" });
+                                  }
+                                }, 500);
+                              }}
+                            >
+                              Upgrade to Pro
+                            </Button>
+                          </div>
+                        </div>
                       </div>
                     )}
                   </div>

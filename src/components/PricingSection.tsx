@@ -2,8 +2,15 @@ import { Check } from "lucide-react";
 import { Button } from "./ui/button";
 import PawIcon from "./PawIcon";
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 
 const PricingSection = () => {
+  const navigate = useNavigate();
+
+  const handleGetStarted = () => {
+    navigate("/login");
+  };
+
   return (
     <section id="pricing" className="w-full px-4 md:px-8 py-12 md:py-16">
       <div className="max-w-5xl mx-auto flex flex-col gap-12">
@@ -53,7 +60,11 @@ const PricingSection = () => {
                 </li>
               ))}
             </ul>
-            <Button variant="outline" className="w-full rounded-full py-6 font-semibold border-2 border-primary/30 hover:border-primary">
+            <Button
+              variant="outline"
+              className="w-full rounded-full py-6 font-semibold border-2 border-primary/30 hover:border-primary"
+              onClick={handleGetStarted}
+            >
               Get Started Free
             </Button>
           </motion.div>
@@ -93,7 +104,10 @@ const PricingSection = () => {
                 </li>
               ))}
             </ul>
-            <Button className="w-full bg-primary text-primary-foreground hover:bg-primary/90 rounded-full py-6 font-semibold shadow-lg">
+            <Button
+              className="w-full bg-primary text-primary-foreground hover:bg-primary/90 rounded-full py-6 font-semibold shadow-lg"
+              onClick={handleGetStarted}
+            >
               Upgrade to Pro
             </Button>
             <p className="text-center text-sm text-muted-foreground mt-4">
