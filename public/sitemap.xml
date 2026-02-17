@@ -1,343 +1,322 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
-        <loc>https://pawnote.entrext.com/</loc>
+        <loc>https://happytails.care/</loc>
         <changefreq>weekly</changefreq>
         <priority>1.0</priority>
     </url>
     <url>
-        <loc>https://pawnote.entrext.com/#features</loc>
+        <loc>https://happytails.care/blog</loc>
         <changefreq>daily</changefreq>
         <priority>0.8</priority>
     </url>
     <url>
-        <loc>https://pawnote.entrext.com/#pricing</loc>
+        <loc>https://happytails.care/blog/i-forgot-what-the-vet-said-recovery-guide</loc>
         <changefreq>monthly</changefreq>
         <priority>0.6</priority>
     </url>
     <url>
-        <loc>https://pawnote.entrext.com/blog</loc>
+        <loc>https://happytails.care/blog/is-my-dogs-heavy-panting-normal</loc>
         <changefreq>monthly</changefreq>
         <priority>0.6</priority>
     </url>
     <url>
-        <loc>https://pawnote.entrext.com/privacy</loc>
+        <loc>https://happytails.care/blog/post-surgery-dog-care-first-24-hours</loc>
         <changefreq>monthly</changefreq>
         <priority>0.6</priority>
     </url>
     <url>
-        <loc>https://pawnote.entrext.com/terms</loc>
+        <loc>https://happytails.care/blog/how-to-tell-if-your-dog-is-in-pain</loc>
         <changefreq>monthly</changefreq>
         <priority>0.6</priority>
     </url>
     <url>
-        <loc>https://pawnote.entrext.com/blog/i-forgot-what-the-vet-said-recovery-guide</loc>
+        <loc>https://happytails.care/blog/my-dog-wont-eat-after-vet</loc>
         <changefreq>monthly</changefreq>
         <priority>0.6</priority>
     </url>
     <url>
-        <loc>https://pawnote.entrext.com/blog/is-my-dogs-heavy-panting-normal</loc>
+        <loc>https://happytails.care/blog/vet-visit-fog</loc>
         <changefreq>monthly</changefreq>
         <priority>0.6</priority>
     </url>
     <url>
-        <loc>https://pawnote.entrext.com/blog/post-surgery-dog-care-first-24-hours</loc>
+        <loc>https://happytails.care/blog/health-memory-bad-strategy</loc>
         <changefreq>monthly</changefreq>
         <priority>0.6</priority>
     </url>
     <url>
-        <loc>https://pawnote.entrext.com/blog/how-to-tell-if-your-dog-is-in-pain</loc>
+        <loc>https://happytails.care/blog/managing-canine-diabetes-checklist</loc>
         <changefreq>monthly</changefreq>
         <priority>0.6</priority>
     </url>
     <url>
-        <loc>https://pawnote.entrext.com/blog/my-dog-wont-eat-after-vet</loc>
+        <loc>https://happytails.care/blog/ivdd-recovery-home-guide</loc>
         <changefreq>monthly</changefreq>
         <priority>0.6</priority>
     </url>
     <url>
-        <loc>https://pawnote.entrext.com/blog/vet-visit-fog</loc>
+        <loc>https://happytails.care/blog/forget-files-interactive-checklists</loc>
         <changefreq>monthly</changefreq>
         <priority>0.6</priority>
     </url>
     <url>
-        <loc>https://pawnote.entrext.com/blog/health-memory-bad-strategy</loc>
+        <loc>https://happytails.care/blog/7-ways-to-hide-pills</loc>
         <changefreq>monthly</changefreq>
         <priority>0.6</priority>
     </url>
     <url>
-        <loc>https://pawnote.entrext.com/blog/managing-canine-diabetes-checklist</loc>
+        <loc>https://happytails.care/blog/5-questions-ask-vet</loc>
         <changefreq>monthly</changefreq>
         <priority>0.6</priority>
     </url>
     <url>
-        <loc>https://pawnote.entrext.com/blog/ivdd-recovery-home-guide</loc>
+        <loc>https://happytails.care/blog/vet-ai-vs-google</loc>
         <changefreq>monthly</changefreq>
         <priority>0.6</priority>
     </url>
     <url>
-        <loc>https://pawnote.entrext.com/blog/forget-files-interactive-checklists</loc>
+        <loc>https://happytails.care/blog/best-apps-managing-dog-health-2026</loc>
         <changefreq>monthly</changefreq>
         <priority>0.6</priority>
     </url>
     <url>
-        <loc>https://pawnote.entrext.com/blog/7-ways-to-hide-pills</loc>
+        <loc>https://happytails.care/blog/emergency-or-expensive-vet-warning-signs</loc>
         <changefreq>monthly</changefreq>
         <priority>0.6</priority>
     </url>
     <url>
-        <loc>https://pawnote.entrext.com/blog/5-questions-ask-vet</loc>
+        <loc>https://happytails.care/blog/is-this-normal-post-procedure-checklist</loc>
         <changefreq>monthly</changefreq>
         <priority>0.6</priority>
     </url>
     <url>
-        <loc>https://pawnote.entrext.com/blog/vet-ai-vs-google</loc>
+        <loc>https://happytails.care/blog/spot-medication-reaction-dogs</loc>
         <changefreq>monthly</changefreq>
         <priority>0.6</priority>
     </url>
     <url>
-        <loc>https://pawnote.entrext.com/blog/best-apps-managing-dog-health-2026</loc>
+        <loc>https://happytails.care/blog/decoding-vet-lingo</loc>
         <changefreq>monthly</changefreq>
         <priority>0.6</priority>
     </url>
     <url>
-        <loc>https://pawnote.entrext.com/blog/emergency-or-expensive-vet-warning-signs</loc>
+        <loc>https://happytails.care/blog/missing-medication-dose-what-to-do</loc>
         <changefreq>monthly</changefreq>
         <priority>0.6</priority>
     </url>
     <url>
-        <loc>https://pawnote.entrext.com/blog/is-this-normal-post-procedure-checklist</loc>
+        <loc>https://happytails.care/blog/why-dog-acts-different-after-vet</loc>
         <changefreq>monthly</changefreq>
         <priority>0.6</priority>
     </url>
     <url>
-        <loc>https://pawnote.entrext.com/blog/spot-medication-reaction-dogs</loc>
+        <loc>https://happytails.care/blog/exercise-restriction-high-energy-dog</loc>
         <changefreq>monthly</changefreq>
         <priority>0.6</priority>
     </url>
     <url>
-        <loc>https://pawnote.entrext.com/blog/decoding-vet-lingo</loc>
+        <loc>https://happytails.care/blog/managing-multiple-medications-dogs</loc>
         <changefreq>monthly</changefreq>
         <priority>0.6</priority>
     </url>
     <url>
-        <loc>https://pawnote.entrext.com/blog/missing-medication-dose-what-to-do</loc>
+        <loc>https://happytails.care/blog/confessions-pet-parent-mixed-meds</loc>
         <changefreq>monthly</changefreq>
         <priority>0.6</priority>
     </url>
     <url>
-        <loc>https://pawnote.entrext.com/blog/why-dog-acts-different-after-vet</loc>
+        <loc>https://happytails.care/blog/stop-calling-vet-simple-questions</loc>
         <changefreq>monthly</changefreq>
         <priority>0.6</priority>
     </url>
     <url>
-        <loc>https://pawnote.entrext.com/blog/exercise-restriction-high-energy-dog</loc>
+        <loc>https://happytails.care/blog/vet-is-rushed-get-information</loc>
         <changefreq>monthly</changefreq>
         <priority>0.6</priority>
     </url>
     <url>
-        <loc>https://pawnote.entrext.com/blog/managing-multiple-medications-dogs</loc>
+        <loc>https://happytails.care/blog/true-cost-misunderstanding-vet-instructions</loc>
         <changefreq>monthly</changefreq>
         <priority>0.6</priority>
     </url>
     <url>
-        <loc>https://pawnote.entrext.com/blog/confessions-pet-parent-mixed-meds</loc>
+        <loc>https://happytails.care/blog/kidney-disease-dogs-lab-results</loc>
         <changefreq>monthly</changefreq>
         <priority>0.6</priority>
     </url>
     <url>
-        <loc>https://pawnote.entrext.com/blog/stop-calling-vet-simple-questions</loc>
+        <loc>https://happytails.care/blog/puppy-first-sick-visit-guide</loc>
         <changefreq>monthly</changefreq>
         <priority>0.6</priority>
     </url>
-    
     <url>
-        <loc>https://pawnote.entrext.com/blog/vet-is-rushed-get-information</loc>
+        <loc>https://happytails.care/blog/cancer-treatment-dogs-chemo-schedule</loc>
         <changefreq>monthly</changefreq>
         <priority>0.6</priority>
     </url>
     <url>
-        <loc>https://pawnote.entrext.com/blog/true-cost-misunderstanding-vet-instructions</loc>
+        <loc>https://happytails.care/blog/epilepsy-seizures-staying-calm-scary-moment</loc>
         <changefreq>monthly</changefreq>
         <priority>0.6</priority>
     </url>
     <url>
-        <loc>https://pawnote.entrext.com/blog/kidney-disease-dogs-lab-results</loc>
+        <loc>https://happytails.care/blog/heart-disease-dogs-medication-cocktail</loc>
         <changefreq>monthly</changefreq>
         <priority>0.6</priority>
     </url>
     <url>
-        <loc>https://pawnote.entrext.com/blog/puppy-first-sick-visit-guide</loc>
+        <loc>https://happytails.care/blog/allergies-skin-issues-elimination-diet</loc>
         <changefreq>monthly</changefreq>
         <priority>0.6</priority>
     </url>
     <url>
-        <loc>https://pawnote.entrext.com/blog/cancer-treatment-dogs-chemo-schedule</loc>
+        <loc>https://happytails.care/blog/senior-dog-health-subtle-signs-aging</loc>
         <changefreq>monthly</changefreq>
         <priority>0.6</priority>
     </url>
     <url>
-        <loc>https://pawnote.entrext.com/blog/epilepsy-seizures-staying-calm-scary-moment</loc>
+        <loc>https://happytails.care/blog/arthritis-care-home-modifications</loc>
         <changefreq>monthly</changefreq>
         <priority>0.6</priority>
     </url>
     <url>
-        <loc>https://pawnote.entrext.com/blog/heart-disease-dogs-medication-cocktail</loc>
+        <loc>https://happytails.care/blog/voice-to-checklist-ai-transcribes-vet-visit</loc>
         <changefreq>monthly</changefreq>
         <priority>0.6</priority>
     </url>
     <url>
-        <loc>https://pawnote.entrext.com/blog/allergies-skin-issues-elimination-diet</loc>
+        <loc>https://happytails.care/blog/privacy-pet-data-health-secure</loc>
         <changefreq>monthly</changefreq>
         <priority>0.6</priority>
     </url>
     <url>
-        <loc>https://pawnote.entrext.com/blog/senior-dog-health-subtle-signs-aging</loc>
+        <loc>https://happytails.care/blog/future-of-veterinary-care-digital-twin</loc>
         <changefreq>monthly</changefreq>
         <priority>0.6</priority>
     </url>
     <url>
-        <loc>https://pawnote.entrext.com/blog/arthritis-care-home-modifications</loc>
+        <loc>https://happytails.care/blog/cutting-toes-guide-stress-free-nail-trimming</loc>
         <changefreq>monthly</changefreq>
         <priority>0.6</priority>
     </url>
     <url>
-        <loc>https://pawnote.entrext.com/blog/voice-to-checklist-ai-transcribes-vet-visit</loc>
+        <loc>https://happytails.care/blog/bland-diet-masterclass-chicken-and-rice</loc>
         <changefreq>monthly</changefreq>
         <priority>0.6</priority>
     </url>
     <url>
-        <loc>https://pawnote.entrext.com/blog/privacy-pet-data-health-secure</loc>
+        <loc>https://happytails.care/blog/how-to-brush-dogs-teeth-when-they-hate-it</loc>
         <changefreq>monthly</changefreq>
         <priority>0.6</priority>
     </url>
     <url>
-        <loc>https://pawnote.entrext.com/blog/future-of-veterinary-care-digital-twin</loc>
+        <loc>https://happytails.care/blog/cleaning-ears-after-beach-step-by-step</loc>
         <changefreq>monthly</changefreq>
         <priority>0.6</priority>
     </url>
     <url>
-        <loc>https://pawnote.entrext.com/blog/cutting-toes-guide-stress-free-nail-trimming</loc>
+        <loc>https://happytails.care/blog/tick-check-101-where-they-hide-remove</loc>
         <changefreq>monthly</changefreq>
         <priority>0.6</priority>
     </url>
     <url>
-        <loc>https://pawnote.entrext.com/blog/bland-diet-masterclass-chicken-and-rice</loc>
+        <loc>https://happytails.care/blog/expressing-anal-glands-guilt-free-guide</loc>
         <changefreq>monthly</changefreq>
         <priority>0.6</priority>
     </url>
     <url>
-        <loc>https://pawnote.entrext.com/blog/how-to-brush-dogs-teeth-when-they-hate-it</loc>
+        <loc>https://happytails.care/blog/managing-hot-spots-recovery-guide</loc>
         <changefreq>monthly</changefreq>
         <priority>0.6</priority>
     </url>
     <url>
-        <loc>https://pawnote.entrext.com/blog/cleaning-ears-after-beach-step-by-step</loc>
+        <loc>https://happytails.care/blog/decoding-the-stool-dog-poop-color-meaning</loc>
         <changefreq>monthly</changefreq>
         <priority>0.6</priority>
     </url>
     <url>
-        <loc>https://pawnote.entrext.com/blog/tick-check-101-where-they-hide-remove</loc>
+        <loc>https://happytails.care/blog/cone-of-shame-survival-guide-comfort-tips</loc>
         <changefreq>monthly</changefreq>
         <priority>0.6</priority>
     </url>
     <url>
-        <loc>https://pawnote.entrext.com/blog/expressing-anal-glands-guilt-free-guide</loc>
+        <loc>https://happytails.care/blog/eye-drops-and-ointments-safe-application-guide</loc>
         <changefreq>monthly</changefreq>
         <priority>0.6</priority>
     </url>
     <url>
-        <loc>https://pawnote.entrext.com/blog/managing-hot-spots-recovery-guide</loc>
+        <loc>https://happytails.care/blog/winter-paw-care-protecting-against-salt-ice</loc>
         <changefreq>monthly</changefreq>
         <priority>0.6</priority>
     </url>
     <url>
-        <loc>https://pawnote.entrext.com/blog/decoding-the-stool-dog-poop-color-meaning</loc>
+        <loc>https://happytails.care/blog/why-competitor-a-too-expensive-pet-parents-2026</loc>
         <changefreq>monthly</changefreq>
         <priority>0.6</priority>
     </url>
     <url>
-        <loc>https://pawnote.entrext.com/blog/cone-of-shame-survival-guide-comfort-tips</loc>
+        <loc>https://happytails.care/blog/5-best-pet-health-tracking-alternatives-review</loc>
         <changefreq>monthly</changefreq>
         <priority>0.6</priority>
     </url>
     <url>
-        <loc>https://pawnote.entrext.com/blog/eye-drops-and-ointments-safe-application-guide</loc>
+        <loc>https://happytails.care/blog/hidden-costs-paper-records-for-dog</loc>
         <changefreq>monthly</changefreq>
         <priority>0.6</priority>
     </url>
     <url>
-        <loc>https://pawnote.entrext.com/blog/winter-paw-care-protecting-against-salt-ice</loc>
+        <loc>https://happytails.care/blog/why-manual-note-taking-failing-pet-health</loc>
         <changefreq>monthly</changefreq>
         <priority>0.6</priority>
     </url>
     <url>
-        <loc>https://pawnote.entrext.com/blog/why-competitor-a-too-expensive-pet-parents-2026</loc>
+        <loc>https://happytails.care/blog/psychology-pet-care-procrastinate-vet-visits</loc>
         <changefreq>monthly</changefreq>
         <priority>0.6</priority>
     </url>
     <url>
-        <loc>https://pawnote.entrext.com/blog/5-best-pet-health-tracking-alternatives-review</loc>
+        <loc>https://happytails.care/blog/build-health-tech-stack-for-your-dog</loc>
         <changefreq>monthly</changefreq>
         <priority>0.6</priority>
     </url>
     <url>
-        <loc>https://pawnote.entrext.com/blog/hidden-costs-paper-records-for-dog</loc>
+        <loc>https://happytails.care/blog/3-reasons-why-your-vet-hates-your-current-record-system</loc>
         <changefreq>monthly</changefreq>
         <priority>0.6</priority>
     </url>
     <url>
-        <loc>https://pawnote.entrext.com/blog/why-manual-note-taking-failing-pet-health</loc>
+        <loc>https://happytails.care/blog/evolution-of-pet-care-paper-folders-to-ai-assistants</loc>
         <changefreq>monthly</changefreq>
         <priority>0.6</priority>
     </url>
     <url>
-        <loc>https://pawnote.entrext.com/blog/psychology-pet-care-procrastinate-vet-visits</loc>
+        <loc>https://happytails.care/blog/why-real-time-checklists-secret-to-faster-recovery</loc>
         <changefreq>monthly</changefreq>
         <priority>0.6</priority>
     </url>
     <url>
-        <loc>https://pawnote.entrext.com/blog/build-health-tech-stack-for-your-dog</loc>
+        <loc>https://happytails.care/blog/smart-pet-movement-tech-extending-canine-lives</loc>
         <changefreq>monthly</changefreq>
         <priority>0.6</priority>
     </url>
     <url>
-        <loc>https://pawnote.entrext.com/blog/3-reasons-why-your-vet-hates-your-current-record-system</loc>
+        <loc>https://happytails.care/blog/how-to-spot-outdated-vet-clinic-why-matters</loc>
         <changefreq>monthly</changefreq>
         <priority>0.6</priority>
     </url>
     <url>
-        <loc>https://pawnote.entrext.com/blog/evolution-of-pet-care-paper-folders-to-ai-assistants</loc>
+        <loc>https://happytails.care/blog/cost-of-calm-investing-pet-tech-saves-money</loc>
         <changefreq>monthly</changefreq>
         <priority>0.6</priority>
     </url>
     <url>
-        <loc>https://pawnote.entrext.com/blog/why-real-time-checklists-secret-to-faster-recovery</loc>
+        <loc>https://happytails.care/blog/why-every-senior-dog-needs-digital-health-tracker</loc>
         <changefreq>monthly</changefreq>
         <priority>0.6</priority>
     </url>
     <url>
-        <loc>https://pawnote.entrext.com/blog/smart-pet-movement-tech-extending-canine-lives</loc>
-        <changefreq>monthly</changefreq>
-        <priority>0.6</priority>
-    </url>
-    <url>
-        <loc>https://pawnote.entrext.com/blog/how-to-spot-outdated-vet-clinic-why-matters</loc>
-        <changefreq>monthly</changefreq>
-        <priority>0.6</priority>
-    </url>
-    <url>
-        <loc>https://pawnote.entrext.com/blog/cost-of-calm-investing-pet-tech-saves-money</loc>
-        <changefreq>monthly</changefreq>
-        <priority>0.6</priority>
-    </url>
-    <url>
-        <loc>https://pawnote.entrext.com/blog/why-every-senior-dog-needs-digital-health-tracker</loc>
-        <changefreq>monthly</changefreq>
-        <priority>0.6</priority>
-    </url>
-    <url>
-        <loc>https://pawnote.entrext.com/blog/PawNote-vs-the-world-specialized-ai-wins</loc>
+        <loc>https://happytails.care/blog/happytails-vs-the-world-specialized-ai-wins</loc>
         <changefreq>monthly</changefreq>
         <priority>0.6</priority>
     </url>

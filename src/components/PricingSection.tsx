@@ -43,7 +43,7 @@ const PricingSection = () => {
               <h3 className="text-2xl font-bold text-foreground">Free</h3>
             </div>
             <p className="text-muted-foreground mb-6">
-              Essential tools for your pet's recovery
+              Essential tools for your pet's care
             </p>
             <div className="text-4xl font-extrabold text-foreground mb-6">
               $0<span className="text-lg font-normal text-muted-foreground">/month</span>
@@ -52,7 +52,7 @@ const PricingSection = () => {
               {[
                 "AI-powered vet questions",
                 "Organize up to 5 vet notes",
-                "Daily recovery tracking",
+                "Daily care routine tracking",
               ].map((feature, index) => (
                 <li key={index} className="flex items-center gap-3">
                   <Check className="w-5 h-5 text-paw-brown flex-shrink-0" />
@@ -94,7 +94,7 @@ const PricingSection = () => {
               {[
                 "Unlimited vet visit notes",
                 "Unlimited AI questions",
-                "Full recovery timelines",
+                "Detailed healing journeys",
                 "Wellness Intelligence trends",
                 "All future features included",
               ].map((feature, index) => (

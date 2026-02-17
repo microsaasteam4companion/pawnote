@@ -34,7 +34,7 @@ interface VisitSummary {
   summary: string;
   tasks: FollowUpTask[];
   timeline: { date: string; event: string }[];
-  recoveryStats: RecoveryStats;
+  healthStats: HealingStats;
 }
 
 interface BehaviorLog {
@@ -45,7 +45,7 @@ interface BehaviorLog {
   itching: "better" | "same" | "worse";
 }
 
-interface RecoveryStats {
+interface HealingStats {
   streak: number;
   lastCompletedDate: string | null;
   dailyCompletion: { [date: string]: boolean };
@@ -176,9 +176,14 @@ const generateVisitSummary = (notes: string): VisitSummary => {
   const timeline: { date: string; event: string }[] = [];
   let maxDuration = 0;
 
-  // 1. Generic Medication Detection (Regex for Word + Dosage)
-  const medRegex = /([A-Z][a-z]+(?:\s+[a-z]+)*)\s+(\d+(?:\.\d+)?\s*(?:mg|ml|mcg|unit|tablet|capsule|pill)s?)/gi;
+  const formatDate = (days: number) => {
+    const date = new Date();
+    date.setDate(date.getDate() + days);
+    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  };
 
+  // 1. Generic Medication Detection
+  const medRegex = /([A-Z][a-z]+(?:\s+[a-z]+)*)\s+(\d+(?:\.\d+)?\s*(?:mg|ml|mcg|unit|tablet|capsule|pill)s?)/gi;
   const foundMeds = new Set<string>();
   const commonMedsList = ["amoxicillin", "prednisone", "tramadol", "carprofen", "gabapentin", "meloxicam", "metronidazole", "clavamox", "apoquel", "benadryl", "cephalexin", "doxycycline", "baytril"];
 
@@ -203,16 +208,12 @@ const generateVisitSummary = (notes: string): VisitSummary => {
 
     if (isMedLine && !foundMeds.has(medName.toLowerCase())) {
       foundMeds.add(medName.toLowerCase());
-
       const context = (line + " " + (lines[index + 1] || "")).toLowerCase();
 
       let freq = "as directed";
       if (context.includes("twice") || context.includes("bid") || context.includes("2 times")) freq = "2 times a day";
       else if (context.includes("once") || context.includes("sid") || context.includes("1 time")) freq = "once a day";
       else if (context.includes("three") || context.includes("tid") || context.includes("3 times")) freq = "3 times a day";
-      else if (context.includes("every 8 hours")) freq = "every 8 hours";
-      else if (context.includes("every 12 hours")) freq = "every 12 hours";
-      else if (context.includes("as needed") || context.includes("prn")) freq = "as needed for symptoms";
 
       let duration = 0;
       const durationMatch = context.match(/(\d+)\s*(?:day|dose|tablet)/);
@@ -221,91 +222,203 @@ const generateVisitSummary = (notes: string): VisitSummary => {
         if (duration > maxDuration) maxDuration = duration;
       }
 
-      let extra = "";
-      if (context.includes("food")) extra = " with food";
-      if (context.includes("empty stomach")) extra = " on empty stomach";
-      if (context.includes("taper") || context.includes("gradually")) extra += " (follow tapering instructions)";
-
       tasks.push({
         id: `med-${index}`,
-        task: `Give ${medName}${dosage ? ` (${dosage})` : ""}: ${freq}${extra}`,
+        task: `Give ${medName}${dosage ? ` (${dosage})` : ""}: ${freq}`,
         done: false,
         category: "medication"
       });
 
       if (duration > 0) {
-        timeline.push({
-          date: `Day ${duration}`,
-          event: `Complete the full course of ${medName}.`
-        });
+        timeline.push({ date: formatDate(duration), event: `Complete ${medName} course.` });
       }
     }
   });
 
-  // 2. CareTriggers
-  const careTriggers = [
-    { keys: ["rest", "activity", "limit", "quiet", "run", "jump"], task: "Limit activity (keep quiet, no running or jumping)", id: "care-rest" },
-    { keys: ["clean", "wash", "wound", "cut", "incision", "dry"], task: "Keep the area/wound clean and dry", id: "care-clean" },
-    { keys: ["monitor", "watch", "signs", "vomit", "appetite"], task: "Monitor for side effects or changes in behavior", id: "care-mon" },
-    { keys: ["bandage", "wrap", "splint", "cone", "e-collar"], task: "Keep bandage/cone on as instructed", id: "care-ortho" }
-  ];
+  // 2. Routine & Time-based Tasks (Handled with Contextual Time)
+  const timeRegex = /(\d{1,2}:\d{2}(?:\s*[-–]\s*\d{1,2}:\d{2})?\s*(?:AM|PM))/gi;
+  const generalTimes = ["morning", "afternoon", "evening", "bedtime", "breakfast", "dinner"];
+  const nonDailySections = ["monthly", "periodic", "long-term", "follow-up", "example", "notice"];
+  let currentTimeLabel = "";
+  let isInPeriodicSection = false;
 
-  careTriggers.forEach(trigger => {
-    if (trigger.keys.some(k => lowerNotes.includes(k))) {
-      tasks.push({ id: trigger.id, task: trigger.task, done: false, category: "care" });
+  lines.forEach((line, index) => {
+    const lowerLine = line.toLowerCase();
+    const timeMatch = line.match(timeRegex);
+    const keywordMatch = generalTimes.find(t => lowerLine.includes(t));
+
+    // Reset context and flag if we hit a periodic section header
+    if (nonDailySections.some(s => lowerLine.includes(s)) && (line.endsWith(":") || line.length < 30)) {
+      currentTimeLabel = "";
+      isInPeriodicSection = true;
+      return;
+    }
+
+    // Update current context and reset periodic flag if a specific time is found
+    if (timeMatch || keywordMatch) {
+      isInPeriodicSection = false;
+      if (timeMatch) {
+        currentTimeLabel = timeMatch[0];
+      } else if (keywordMatch) {
+        if (line.length < 50 || lowerLine.startsWith("before") || lowerLine.startsWith("at") || lowerLine.endsWith(":")) {
+          currentTimeLabel = keywordMatch.charAt(0).toUpperCase() + keywordMatch.slice(1);
+        }
+      }
+    }
+
+    // Filter out passive info, age categories, and chatbot meta-talk
+    const nonActionable = [
+      "puppies", "kittens", "senior pets", "adult pets", "if you notice", "seek veterinary advice",
+      "if you'd like", "create a", "balanced pet routine", "structured in", "works best when", "if advised",
+      "usually given", "depending on breed", "may require", "if needed", "if prescribed",
+      "if medications", "regular vet visits", "keep vaccinations", "if thyroid",
+      "if any", "should be", "provide a", "choose high-quality", "helps regulate", "helps with",
+      "reduces boredom", "healthy pet routine", "consistent routine", "example of a"
+    ];
+    if (nonActionable.some(pw => lowerLine.includes(pw))) return;
+
+    // Identify if the line is a task
+    const isBullet = /^[*•\-]\s+/.test(line);
+    const hasTime = line.match(timeRegex);
+
+    // Check for "need to do" markers
+    const actionMarkers = ["refill", "ensure", "spend", "take", "serve", "give", "brush", "check", "inspect", "wipe", "provide", "allow", "schedule"];
+    const hasActionMarker = actionMarkers.some(am => lowerLine.includes(am));
+
+    const isTaskLine = !isInPeriodicSection && (isBullet || hasTime || (currentTimeLabel && line.length > 5 && !line.endsWith(":")));
+
+    if (isTaskLine && hasActionMarker) {
+      let cleaned = line.replace(/^[*•\-]\s+/, "");
+      if (hasTime) cleaned = cleaned.replace(hasTime[0], "");
+
+      const fluff = [
+        /^(?:at|in|from|during|the|between|before|after|within|around)\s+/i,
+        /^[*•\-\s]+/, /^[,.:\s*–-]+/,
+        /\bveterinarian-recommended\b/i,
+        /\busually given\b/i
+      ];
+      fluff.forEach(p => cleaned = cleaned.replace(p, ""));
+      cleaned = cleaned.replace(/\s+\*\*\*\*\s*/g, " ").replace(/\*\*/g, "").replace(/ {2,}/g, " ").trim();
+
+      // Make it punchy: Capture only the action, cut off explanations
+      const cutPoints = [".", " such as", " to help", " to prevent", " to stimulate", " to support", " to ensure"];
+      cutPoints.forEach(cp => {
+        if (cleaned.includes(cp)) {
+          cleaned = cleaned.split(cp)[0];
+        }
+      });
+
+      // Skip lines that are just headers, overly generic, or passive
+      if (cleaned.toLowerCase() === currentTimeLabel.toLowerCase()) return;
+      if (generalTimes.some(t => cleaned.toLowerCase() === t)) return;
+      if (nonDailySections.some(s => lowerLine.includes(s))) return;
+
+      if (cleaned.length > 3 && cleaned.length < 150) {
+        const fullTask = `${currentTimeLabel ? `${currentTimeLabel}: ` : ""}${cleaned.charAt(0).toUpperCase() + cleaned.slice(1)}`;
+        const finalTask = fullTask.replace(/^(.*?): \1: /i, "$1: ");
+
+        if (!tasks.some(t => t.task === finalTask)) {
+          tasks.push({ id: `routine-${index}`, task: finalTask, done: false, category: "care" });
+        }
+      }
     }
   });
 
-  // 3. Follow-up
-  const fupMatch = lowerNotes.match(/(\d+)\s*(day|week|month)s?\s*(recheck|follow|return|visit)/i);
-  if (fupMatch || lowerNotes.includes("recheck")) {
-    const time = fupMatch ? `${fupMatch[1]} ${fupMatch[2]}s` : "the scheduled time";
-    tasks.push({ id: "care-fup", task: `Schedule follow-up appointment in ${time}`, done: false, category: "followup" });
+  // 3. Advanced Timeline Extraction (Periodic Care)
+  // Catch: "Every 3 months", "once every month", "Every 3-4 weeks", "6-12 months"
+  const periodicPattern = /(?:once\s+)?every\s+(a|an|\d+(?:\s*[-–]\s*\d+)?|(?=month|year|week|day))\s*(day|week|month|year)s?/gi;
+  let match;
+  while ((match = periodicPattern.exec(lowerNotes)) !== null) {
+    const period = match[1] || "1";
+    const unit = match[2].toLowerCase();
+    let days = 30;
+
+    let num = 1;
+    if (period.includes("-") || period.includes("–")) {
+      num = parseInt(period.split(/[-–]/)[1].trim());
+    } else if (/\d+/.test(period)) {
+      num = parseInt(period);
+    }
+
+    if (unit.startsWith("day")) days = num;
+    else if (unit.startsWith("week")) days = num * 7;
+    else if (unit.startsWith("month")) days = num * 30;
+    else if (unit.startsWith("year")) days = num * 365;
 
     timeline.push({
-      date: fupMatch ? `${fupMatch[1]} ${fupMatch[2]}s` : "Follow-up",
-      event: "Return to the vet for a recheck appointment."
+      date: formatDate(days),
+      event: `Health Milestone: ${match[0].charAt(0).toUpperCase() + match[0].slice(1)}`
     });
   }
 
-  // 4. Default Care
-  if (tasks.length === 0) {
-    tasks.push({ id: "gen-1", task: "Follow the care instructions provided by your veterinarian", done: false, category: "care" });
-  }
-
-  // 5. Timeline Assembly
-  if (timeline.length === 0 || !timeline.some(t => t.date === "Today")) {
-    timeline.unshift({ date: "Today", event: "Start treatment and organize the medication schedule." });
-  }
-
-  if (maxDuration > 0) {
-    timeline.push({ date: `After Day ${maxDuration}`, event: "Healing phase complete! Return to normal activity unless told otherwise." });
-  } else if (tasks.some(t => t.category === "medication")) {
-    timeline.push({ date: "Day 7", event: "Expected completion of primary treatment." });
-  }
-
-  const uniqueTimeline = Array.from(new Set(timeline.map(t => JSON.stringify(t)))).map(s => JSON.parse(s));
-  uniqueTimeline.sort((a, b) => {
-    const getDays = (d: string) => {
-      if (d === "Today") return 0;
-      const m = d.match(/(\d+)/);
-      return m ? parseInt(m[1]) : 999;
-    };
-    return getDays(a.date) - getDays(b.date);
+  // Catch common keywords for timeline
+  const timelineKeywords = ["vaccination", "booster", "check-up", "annual", "dental", "grooming"];
+  timelineKeywords.forEach(word => {
+    if (lowerNotes.includes(word)) {
+      const isAnnual = lowerNotes.includes("annual") || lowerNotes.includes("year");
+      const targetDate = formatDate(isAnnual ? 365 : 180);
+      if (!timeline.some(t => t.event.toLowerCase().includes(word))) {
+        timeline.push({ date: targetDate, event: `${word.charAt(0).toUpperCase() + word.slice(1)} recommended` });
+      }
+    }
   });
 
-  return {
-    summary: foundMeds.size > 0
-      ? `We've detected ${foundMeds.size} medication(s) and organized your care instructions.`
-      : "We've organized your vet's care instructions into a daily plan.",
-    tasks: tasks,
-    timeline: uniqueTimeline,
-    recoveryStats: {
-      streak: 0,
-      lastCompletedDate: null,
-      dailyCompletion: {},
-      dailyBehavior: {}
+  if (tasks.some(t => t.category === "medication") && !timeline.some(t => t.event.toLowerCase().includes("progress"))) {
+    timeline.push({ date: formatDate(10), event: "Progress review in healing journey" });
+  }
+
+  // 4. Follow-up detection
+  const fupMatch = lowerNotes.match(/(\d+)\s*(day|week|month)s?\s*(recheck|follow|return|visit|check-up)/i);
+  if (fupMatch) {
+    let days = 7;
+    const num = parseInt(fupMatch[1]);
+    const unit = fupMatch[2].toLowerCase();
+    if (unit.startsWith("day")) days = num;
+    else if (unit.startsWith("week")) days = num * 7;
+    else if (unit.startsWith("month")) days = num * 30;
+
+    const targetDate = formatDate(days);
+    tasks.push({ id: "care-fup", task: `Schedule recheck by ${targetDate}`, done: false, category: "followup" });
+    timeline.push({ date: targetDate, event: "Veterinary recheck appointment." });
+  }
+
+  // 5. Cleanup and Sorting
+  const timeWeight = (taskStr: string) => {
+    const lower = taskStr.toLowerCase();
+    const timeMatch = taskStr.match(/(\d{1,2}):(\d{2})\s*(AM|PM)/i);
+    if (timeMatch) {
+      let h = parseInt(timeMatch[1]);
+      if (timeMatch[3].toUpperCase() === "PM" && h < 12) h += 12;
+      if (timeMatch[3].toUpperCase() === "AM" && h === 12) h = 0;
+      return h * 60 + parseInt(timeMatch[2]);
     }
+    const weights: Record<string, number> = { morning: 1, breakfast: 2, noon: 3, afternoon: 4, evening: 5, dinner: 6, night: 7, bedtime: 8 };
+    for (const [key, w] of Object.entries(weights)) if (lower.includes(key)) return w * 100;
+    return 999;
+  };
+
+  const sortedTasks = [...tasks].sort((a, b) => timeWeight(a.task) - timeWeight(b.task));
+
+  const groupedTimeline: { [date: string]: string[] } = {};
+  timeline.forEach(t => {
+    if (!groupedTimeline[t.date]) groupedTimeline[t.date] = [];
+    if (!groupedTimeline[t.date].includes(t.event)) {
+      groupedTimeline[t.date].push(t.event);
+    }
+  });
+
+  const uniqueTimeline = Object.entries(groupedTimeline).map(([date, events]) => ({
+    date,
+    event: events.join(", ")
+  })).sort((a, b) => (a.date === "Today" ? -1 : b.date === "Today" ? 1 : new Date(a.date).getTime() - new Date(b.date).getTime()));
+
+  if (!uniqueTimeline.some(t => t.date === "Today")) uniqueTimeline.unshift({ date: "Today", event: "Start new care routine." });
+
+  return {
+    summary: foundMeds.size > 0 ? `Detected ${foundMeds.size} medication(s) and organized your plan.` : "Organized your pet's daily care plan.",
+    tasks: sortedTasks,
+    timeline: uniqueTimeline,
+    healthStats: { streak: 0, lastCompletedDate: null, dailyCompletion: {}, dailyBehavior: {} }
   };
 };
 
@@ -366,8 +479,8 @@ const Dashboard = () => {
   const [visitSummary, setVisitSummary] = useState<VisitSummary | null>(null);
   const [isTranscribing, setIsTranscribing] = useState(false);
 
-  // Sync recovery stats with Supabase
-  const syncStatsWithSupabase = async (stats: RecoveryStats) => {
+  // Sync health stats with Supabase
+  const syncStatsWithSupabase = async (stats: HealingStats) => {
     if (!user) return;
     try {
       const { error } = await supabase
@@ -413,7 +526,7 @@ const Dashboard = () => {
             const parsed = JSON.parse(storedSummary);
             const mergedSummary = {
               ...parsed,
-              recoveryStats: {
+              healthStats: {
                 streak: data.streak || 0,
                 lastCompletedDate: data.last_completed_date,
                 dailyCompletion: data.daily_completion || {},
@@ -424,9 +537,6 @@ const Dashboard = () => {
             localStorage.setItem("pawnote-visit-summary", JSON.stringify(mergedSummary));
           }
         } else {
-          // If no profile exists, it might be created by AuthProvider concurrently.
-          // We don't need to force create it here to avoid race conditions (409 Conflict).
-          // Local state will handle the UI until user interacts.
           console.log("No profile stats found, using local defaults.");
         }
       } catch (err) {
@@ -472,8 +582,8 @@ const Dashboard = () => {
       yesterday.setDate(yesterday.getDate() - 1);
       const yesterdayStr = yesterday.toISOString().split('T')[0];
 
-      let newStreak = visitSummary.recoveryStats.streak;
-      const yesterdayDone = visitSummary.recoveryStats.dailyCompletion[yesterdayStr];
+      let newStreak = visitSummary.healthStats.streak;
+      const yesterdayDone = visitSummary.healthStats.dailyCompletion[yesterdayStr];
 
       if (!yesterdayDone && lastSessionDate === yesterdayStr) {
         newStreak = 0;
@@ -485,10 +595,10 @@ const Dashboard = () => {
       const dailyResetSummary = {
         ...visitSummary,
         tasks: resetTasks,
-        recoveryStats: {
-          ...visitSummary.recoveryStats,
+        healthStats: {
+          ...visitSummary.healthStats,
           streak: newStreak,
-          dailyBehavior: visitSummary.recoveryStats.dailyBehavior || {}
+          dailyBehavior: visitSummary.healthStats.dailyBehavior || {}
         }
       };
 
@@ -504,8 +614,8 @@ const Dashboard = () => {
     if (!visitSummary) return;
     const today = getTodayDate();
 
-    // Ensure recoveryStats.dailyBehavior exists
-    const currentBehavior = visitSummary.recoveryStats.dailyBehavior || {};
+    // Ensure healthStats.dailyBehavior exists
+    const currentBehavior = visitSummary.healthStats.dailyBehavior || {};
     const todayLog = currentBehavior[today] || { appetite: "same", energy: "same", sleep: "same", movement: "same", itching: "same" };
 
     const updatedBehavior = {
@@ -517,13 +627,13 @@ const Dashboard = () => {
     };
 
     const updatedStats = {
-      ...visitSummary.recoveryStats,
+      ...visitSummary.healthStats,
       dailyBehavior: updatedBehavior
     };
 
     const updatedSummary = {
       ...visitSummary,
-      recoveryStats: updatedStats
+      healthStats: updatedStats
     };
 
     setVisitSummary(updatedSummary);
@@ -607,8 +717,8 @@ const Dashboard = () => {
     );
 
     const allDoneNow = updatedTasks.every(t => t.done);
-    const wasDoneToday = visitSummary.recoveryStats.dailyCompletion[today];
-    let newStats = { ...visitSummary.recoveryStats };
+    const wasDoneToday = visitSummary.healthStats.dailyCompletion[today];
+    let newStats = { ...visitSummary.healthStats };
 
     if (allDoneNow && !wasDoneToday) {
       newStats.streak += 1;
@@ -622,7 +732,7 @@ const Dashboard = () => {
       newStats.lastCompletedDate = null;
     }
 
-    const updatedSummary = { ...visitSummary, tasks: updatedTasks, recoveryStats: newStats };
+    const updatedSummary = { ...visitSummary, tasks: updatedTasks, healthStats: newStats };
     setVisitSummary(updatedSummary);
     localStorage.setItem("pawnote-visit-summary", JSON.stringify(updatedSummary));
 
@@ -866,11 +976,11 @@ const Dashboard = () => {
                   Add your vet's recommendations so we can help you stay organized.
                 </p>
               )}
-              <div className="mt-4 flex flex-col items-center md:items-start gap-2">
+              <div className="mt-4 flex flex-wrap items-center md:items-start gap-3">
                 <Button
                   onClick={handleGenerateSummary}
                   disabled={!vetNotes.trim() || isTranscribing}
-                  className="w-full md:w-auto bg-primary text-primary-foreground hover:bg-primary/90 rounded-full px-8 py-5 md:py-6 font-semibold"
+                  className="w-full md:w-auto bg-primary text-primary-foreground hover:bg-primary/90 rounded-full px-8 py-5 md:py-6 font-semibold shadow-md transition-all active:scale-[0.98]"
                 >
                   {isTranscribing ? (
                     <>
@@ -883,8 +993,28 @@ const Dashboard = () => {
                     </>
                   )}
                 </Button>
+
+                {vetNotes.trim() && (
+                  <Button
+                    onClick={() => {
+                      setVetNotes("");
+                      setVisitSummary(null);
+                      localStorage.removeItem("pawnote-vet-notes");
+                      localStorage.removeItem("pawnote-visit-summary");
+                      toast({
+                        title: "Notes Cleared",
+                        description: "Your workspace has been reset.",
+                      });
+                    }}
+                    variant="ghost"
+                    className="w-full md:w-auto text-muted-foreground hover:text-destructive hover:bg-destructive/5 rounded-full px-6 py-5 md:py-6 font-medium"
+                  >
+                    Clear Notes
+                  </Button>
+                )}
+
                 {!user?.isPro && (
-                  <p className="text-xs text-muted-foreground">
+                  <p className="text-xs text-muted-foreground self-center">
                     {user?.notesRemaining} free notes remaining
                   </p>
                 )}
@@ -903,7 +1033,7 @@ const Dashboard = () => {
                     <div className="flex items-center self-start md:self-auto gap-2 bg-primary/10 px-3 py-1.5 rounded-full border border-primary/10">
                       <Sparkles className="w-4 h-4 text-primary fill-primary" />
                       <span className="text-xs sm:text-sm font-bold text-primary">
-                        {visitSummary.recoveryStats.streak} Day Recovery Streak
+                        {visitSummary.healthStats.streak} Day Care Streak
                       </span>
                     </div>
                   </div>
@@ -942,7 +1072,7 @@ const Dashboard = () => {
                               </label>
                               <div className="flex gap-2">
                                 {['worse', 'same', 'better'].map((val) => {
-                                  const todayValue = (visitSummary.recoveryStats.dailyBehavior?.[getTodayDate()]?.[cat as keyof BehaviorLog]) || 'same';
+                                  const todayValue = (visitSummary.healthStats.dailyBehavior?.[getTodayDate()]?.[cat as keyof BehaviorLog]) || 'same';
                                   return (
                                     <button
                                       key={val}
@@ -962,15 +1092,15 @@ const Dashboard = () => {
                         </div>
 
                         {/* Trends Display */}
-                        {Object.keys(visitSummary.recoveryStats.dailyBehavior || {}).length > 0 && (
+                        {Object.keys(visitSummary.healthStats.dailyBehavior || {}).length > 0 && (
                           <div className="bg-white/60 rounded-2xl p-6 border border-primary/10">
                             <div className="flex items-center gap-2 mb-4 text-primary font-bold">
                               <TrendingUp className="w-5 h-5 shrink-0" />
-                              <span className="text-sm sm:text-base">Behavioral Insights (Day {Object.keys(visitSummary.recoveryStats.dailyBehavior || {}).length})</span>
+                              <span className="text-sm sm:text-base">Behavioral Insights (Day {Object.keys(visitSummary.healthStats.dailyBehavior || {}).length})</span>
                             </div>
 
                             <div className="space-y-4 mb-6">
-                              {calculateBehaviorIntelligence(visitSummary.recoveryStats.dailyBehavior || {})?.trends.map((t) => (
+                              {calculateBehaviorIntelligence(visitSummary.healthStats.dailyBehavior || {})?.trends.map((t) => (
                                 <div key={t.category} className="flex items-center justify-between">
                                   <span className="text-sm capitalize font-medium">{t.category}</span>
                                   <div className="flex items-center gap-3">
@@ -990,13 +1120,13 @@ const Dashboard = () => {
                             <div className="p-4 bg-primary/5 rounded-xl flex gap-3">
                               <AlertCircle className="w-5 h-5 text-primary shrink-0" />
                               <p className="text-sm text-foreground/80 italic">
-                                "{calculateBehaviorIntelligence(visitSummary.recoveryStats.dailyBehavior || {})?.guidance}"
+                                "{calculateBehaviorIntelligence(visitSummary.healthStats.dailyBehavior || {})?.guidance}"
                               </p>
                             </div>
 
-                            {Object.keys(visitSummary.recoveryStats.dailyBehavior || {}).length <= 4 && (
+                            {Object.keys(visitSummary.healthStats.dailyBehavior || {}).length <= 4 && (
                               <p className="mt-4 text-[10px] text-muted-foreground text-center">
-                                Building baseline (Day {Object.keys(visitSummary.recoveryStats.dailyBehavior || {}).length}/4)
+                                Building baseline (Day {Object.keys(visitSummary.healthStats.dailyBehavior || {}).length}/4)
                               </p>
                             )}
                           </div>
@@ -1055,17 +1185,17 @@ const Dashboard = () => {
                       </div>
                     )}
                   </div>
-                  {visitSummary.recoveryStats.streak === 0 && (
+                  {visitSummary.healthStats.streak === 0 && (
                     <div className="bg-red-50 border border-red-100 rounded-xl p-4">
                       <p className="text-red-600 text-sm font-medium">
-                        Reminder: Consistent care is key to a fast recovery. Make sure to complete today's checklist to restart your streak!
+                        Reminder: Consistent care is key to a healthy pet. Make sure to complete today's checklist to restart your streak!
                       </p>
                     </div>
                   )}
-                  {visitSummary.recoveryStats.streak > 0 && !visitSummary.recoveryStats.dailyCompletion[getTodayDate()] && (
+                  {visitSummary.healthStats.streak > 0 && !visitSummary.healthStats.dailyCompletion[getTodayDate()] && (
                     <div className="bg-blue-50 border border-blue-100 rounded-xl p-4">
                       <p className="text-blue-600 text-sm font-medium">
-                        You're doing great! Complete today's tasks to keep your {visitSummary.recoveryStats.streak} day streak alive.
+                        You're doing great! Complete today's tasks to keep your {visitSummary.healthStats.streak} day streak alive.
                       </p>
                     </div>
                   )}
@@ -1110,7 +1240,7 @@ const Dashboard = () => {
                 <div className="card-yellow rounded-card-lg">
                   <h3 className="text-lg md:text-xl font-bold text-foreground mb-4 flex items-center gap-2">
                     <Calendar className="w-5 h-5" />
-                    Recovery Timeline
+                    Healing Journey
                   </h3>
                   <div className="space-y-4">
                     {visitSummary.timeline.map((item, i) => (
